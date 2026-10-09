@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>خريطة مواد الكلية</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f4f6f8;--card:#fff;--tx:#1b2430;--mut:#6b7684;--bd:#dde2e8;--lk:#e4e7eb;--lkt:#8b95a1;--ok:#d9f2e3;--okb:#1e9e5a;--col:#eef1f4}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12161b;--card:#1b2128;--tx:#e8edf2;--mut:#93a0ae;--bd:#2d3640;--lk:#262d35;--lkt:#6d7885;--ok:#17402b;--col:#192027}}
+:root[data-theme="dark"]{--bg:#12161b;--card:#1b2128;--tx:#e8edf2;--mut:#93a0ae;--bd:#2d3640;--lk:#262d35;--lkt:#6d7885;--ok:#17402b;--col:#192027}
+html,body{height:100%;margin:0}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;display:flex;flex-direction:column}
+header{padding:8px 12px;border-bottom:1px solid var(--bd)}
+.r1{display:flex;justify-content:space-between;align-items:center;gap:8px}
+h1{font-size:16px;margin:0}
+.btns{display:flex;gap:6px}
+.btns button{min-width:36px;height:34px;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:8px;font:inherit;font-size:15px}
+.bar{height:6px;background:var(--lk);border-radius:6px;overflow:hidden;margin:7px 0 3px}
+.bar i{display:block;height:100%;background:var(--okb);width:0;transition:width .3s}
+.stat{font-size:12px;color:var(--mut)}
+.leg{display:flex;gap:10px;font-size:11px;color:var(--mut);margin-top:3px;flex-wrap:wrap}
+.leg b{display:inline-block;width:10px;height:10px;border-radius:3px;margin-inline-end:3px;vertical-align:-1px;border:1.5px solid}
+#w{flex:1;overflow:auto;direction:ltr;-webkit-overflow-scrolling:touch}
+svg{display:block}
+.nd{cursor:pointer}
+.nd text{pointer-events:none;font-family:system-ui,sans-serif}
+#t{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:12px;right:12px;background:#222;color:#fff;padding:10px;border-radius:10px;text-align:center;opacity:0;transition:.25s;pointer-events:none;font-size:14px}
+#t.s{opacity:1}
+</style>
+</head>
+<body>
+<header>
+<div class="r1"><h1>🦷 خريطة المواد</h1>
+<div class="btns"><button id="zo">−</button><button id="zi">+</button><button id="rs" title="إعادة ضبط">↺</button></div></div>
+<div class="bar"><i id="pb"></i></div>
+<div class="stat" id="st"></div>
+<div class="leg"><span><b style="background:var(--lk);border-color:var(--lkt)"></b>مقفولة</span><span><b style="background:#fff;border-color:#2563eb"></b>متاحة (دوس تنجح)</span><span><b style="background:var(--ok);border-color:var(--okb)"></b>ناجح</span></div>
+</header>
+<div id="w"></div>
+<div id="t"></div>
+<script>
+const D=[
+["20GANT11","Anatomy 1",1,""],["20GHST11","General Histology",1,""],["20GBCH11","Biochemistry",1,""],["2100BHD11","Human Dentition 1",1,""],["211BDBM11","Basic Dental Biomaterials",1,""],["20UME111","Entrepreneurship & Innovation",1,""],
+["20GANT12","Anatomy 2",2,"20GANT11"],["20GMB12","Microbiology & Immunology",2,""],["20GPHS12","General Physiology",2,""],["2100BHD12","Human Dentition 2",2,"2100BHD11"],["211ADBM12","Applied Dental Biomaterials",2,"211BDBM11"],["20UMCT12","Critical Thinking",2,""],
+["20GPHA21","Pharmacology",3,""],["20GPTH21","General Pathology",3,""],["2100B21","Oral Biology 1",3,"20GHST11"],["23RPROP21","Removable Prostho 1",3,"211ADBM12"],["20GRES21","Research Methodology",3,""],
+["2100B22","Oral Biology 2",4,"2100B21"],["28REDP22","Restorative Esthetic 1",4,"211ADBM12"],["23FPROP22","Fixed Prostho 1",4,"211ADBM12"],["23RPROP22","Removable Prostho 2",4,"23RPROP21"],["20GMED22","General Medicine",4,"20GPHA21"],
+["22OMR31","Oral Radiology 1",5,""],["29OMP31","Oral Pathology 1",5,"20GPTH21+2100B22"],["28REDP31","Restorative Esthetic 2",5,"28REDP22"],["25ENDOP31","Endodontics 1",5,"211ADBM12"],["23FPROP31","Fixed Prostho 2",5,"23FPROP22"],["23RPROC31","Removable Prostho 3",5,"23RPROP22"],["20GSUR31","General Surgery",5,"20GANT12+20GPHS12"],
+["22OMR32","Oral Radiology 2",6,"22OMR31"],["29OMP32","Oral Pathology 2",6,"29OMP31"],["28REDC32","Restorative Esthetic 3",6,"28REDP31"],["25ENDOP32","Endodontics 2",6,"25ENDOP31"],["23FPROC32","Fixed Prostho 3",6,"23FPROP31"],["23RPROC32","Removable Prostho 4",6,"23RPROC31"],["24OMROD32","Oral Diagnosis",6,"29OMP31"],
+["26PUBH41","Public Health & Preventive",7,"2100B22+211ADBM12"],["28REDC41","Restorative Esthetic 4",7,"28REDC32"],["25ENDOC41","Endodontics 3",7,"25ENDOP32+22OMR32+29OMP32"],["23FPROC41","Fixed Prostho 4",7,"23FPROC32"],["23RPROC41","Removable Prostho 5",7,"23RPROC32"],["210MS41","Oral Surgery 1",7,"20GSUR31+29OMP32"],["24OMED41","Oral Medicine 1",7,"20GMED22+29OMP32"],
+["28REDC42","Restorative Esthetic 5",8,"28REDC41"],["25ENDOC42","Endodontics 4",8,"25ENDOC41"],["23FPROC42","Fixed Prostho 5",8,"23FPROC41"],["23RPROC42","Removable Prostho 6",8,"23RPROC41"],["210MS42","Oral Surgery 2",8,"210MS41"],["24OMED42","Oral Medicine 2",8,"24OMED41"],["20MOCC42","Occlusion 1",8,"2100BHD12+23RPROP22"],
+["24PER51","Periodontology 1",9,"29OMP32+22OMR32"],["210MS51","Oral Surgery 3",9,"210MS42"],["26PEDO51","Pedodontics 1",9,"22OMR32+28REDC42+25ENDOC42"],["20MIMP51","Implantology",9,"210MS42+23FPROC42"],["27ORTH51","Orthodontics 1",9,"211ADBM12+22OMR32"],["20MCC51","Comprehensive Care 1",9,"24OMROD32+23FPROC42+28REDC42+25ENDOC42+23RPROC42"],["20MOCC51","Occlusion 2",9,"20MOCC42"],
+["24PER52","Periodontology 2",10,"24PER51"],["210MS52","Oral Surgery 4",10,"210MS51"],["26PEDO52","Pedodontics 2",10,"26PEDO51"],["27ORTH52","Orthodontics 2",10,"27ORTH51"],["20MDIG52","Digital Dentistry",10,"23FPROC42+23RPROC42+28REDC42+27ORTH51"],["20MCC52","Comprehensive Care 2",10,"24OMROD32+23FPROC42+28REDC42+25ENDOC42+23RPROC42+24PER51"],["20MEST52","Esthetics",10,"23FPROC42+28REDC42+24PER51"]
+].map(([c,n,t,p])=>({c,n,t,p:p?p.split("+"):[],u:[]}));
+const by={};D.forEach(x=>by[x.c]=x);
+D.forEach(x=>x.p.forEach(p=>by[p].u.push(x.c)));
+const col=c=>/ANT|GPHS|GSUR|OMS|MS\d/.test(c)?"#c0392b":/RPRO|FPRO|BHD|BDBM|ADBM|MOCC/.test(c)?"#e8650a":/OMR|OMP|OMED|OMROD|B2|GPTH|GPHA|GMED|GHST/.test(c)?"#1f6fb2":/RED|ENDO/.test(c)?"#2e7d32":/PEDO|ORTH|MCC|PER|MIMP|MDIG|MEST/.test(c)?"#6a2fa0":"#6b7684";
+const NW=124,NH=50,CX=172,RY=64,X0=14,Y0=40;
+D.forEach(x=>{const r=D.filter(y=>y.t===x.t);x.r=r.indexOf(x);x.x=X0+(x.t-1)*CX;x.y=Y0+x.r*RY;});
+const W=X0*2+9*CX+NW,H=Y0+7*RY+10;
+let pass=new Set(),Z=0.8,K="lum-pass-v1";
+try{pass=new Set(JSON.parse(localStorage.getItem(K)||"[]"))}catch(e){}
+const save=()=>{try{localStorage.setItem(K,JSON.stringify([...pass]))}catch(e){}};
+const open=x=>x.p.every(p=>pass.has(p));
+const toast=m=>{const t=document.getElementById("t");t.textContent=m;t.className="s";clearTimeout(toast.i);toast.i=setTimeout(()=>t.className="",2600)};
+function unpass(c){pass.delete(c);by[c].u.forEach(u=>pass.has(u)&&unpass(u))}
+function tap(c){const x=by[c];
+ if(pass.has(c)){unpass(c);toast("اتلغى النجاح في "+x.n)}
+ else if(open(x)){pass.add(c);const n=x.u.filter(u=>open(by[u])&&!pass.has(u)).length;toast(n?"اتفتح لك "+n+" مادة جديدة 🎉":"تم ✅")}
+ else toast("لازم تنجح الأول في: "+x.p.filter(p=>!pass.has(p)).map(p=>by[p].n).join(" ، "));
+ save();render();}
+function wrap(s){if(s.length<=19)return[s];let i=s.lastIndexOf(" ",19);if(i<0)i=19;return[s.slice(0,i),s.slice(i).trim()]}
+function render(){
+ let s=`<svg width="${W*Z}" height="${H*Z}" viewBox="0 0 ${W} ${H}">`;
+ for(let t=1;t<=10;t++){const n=D.filter(x=>x.t===t).length;
+  s+=`<rect x="${X0+(t-1)*CX-8}" y="4" width="${NW+16}" height="${Y0+n*RY-8}" rx="12" fill="var(--col)" stroke="var(--bd)"/><text x="${X0+(t-1)*CX+NW/2}" y="24" text-anchor="middle" font-size="12" font-weight="700" fill="var(--tx)">Semester ${t}</text>`}
+ let e="",e2="";
+ D.forEach(x=>x.p.forEach(p=>{const a=by[p],x1=a.x+NW,y1=a.y+NH/2,x2=x.x,y2=x.y+NH/2,d=Math.max(30,(x2-x1)/2),on=pass.has(p),c=col(p);
+  const g=`<path d="M${x1} ${y1}C${x1+d} ${y1},${x2-d} ${y2},${x2} ${y2}" fill="none" stroke="${on?c:"#9aa3ae"}" stroke-width="${on?2.4:1.3}" ${on?"":'stroke-dasharray="4 3" opacity=".55"'}/><polygon points="${x2},${y2} ${x2-7},${y2-4} ${x2-7},${y2+4}" fill="${on?c:"#9aa3ae"}" ${on?"":'opacity=".55"'}/>`;
+  if(on)e2+=g;else e+=g}));
+ s+=e+e2;
+ D.forEach(x=>{const ps=pass.has(x.c),av=!ps&&open(x),c=col(x.c);
+  const fill=ps?"var(--ok)":av?"#fff":"var(--lk)",stk=ps?"var(--okb)":av?c:"var(--lkt)",tc=ps||av?(ps?"var(--tx)":"#1b2430"):"var(--lkt)";
+  const L=wrap(x.n);
+  s+=`<g class="nd" onclick="tap('${x.c}')"><rect x="${x.x}" y="${x.y}" width="${NW}" height="${NH}" rx="10" fill="${fill}" stroke="${stk}" stroke-width="${av?2.2:1.5}"/>`;
+  L.forEach((l,i)=>s+=`<text x="${x.x+NW/2}" y="${x.y+(L.length>1?15:20)+i*12}" text-anchor="middle" font-size="10.5" font-weight="600" fill="${tc}">${l.replace(/&/g,"&amp;")}</text>`);
+  s+=`<text x="${x.x+NW/2}" y="${x.y+NH-7}" text-anchor="middle" font-size="9" fill="${ps||av?"#6b7684":"var(--lkt)"}">${x.c}${ps?" ✓":!av?" 🔒":""}</text></g>`});
+ s+="</svg>";
+ const w=document.getElementById("w"),sx=w.scrollLeft,sy=w.scrollTop;
+ w.innerHTML=s;w.scrollLeft=sx;w.scrollTop=sy;
+ document.getElementById("pb").style.width=pass.size/D.length*100+"%";
+ document.getElementById("st").textContent=`نجحت في ${pass.size} من ${D.length} • متاح لك دلوقتي ${D.filter(x=>!pass.has(x.c)&&open(x)).length}`;
+}
+document.getElementById("zi").onclick=()=>{Z=Math.min(1.6,Z+.2);render()};
+document.getElementById("zo").onclick=()=>{Z=Math.max(.4,Z-.2);render()};
+document.getElementById("rs").onclick=()=>{if(confirm("تمسح كل التقدم؟")){pass.clear();save();render()}};
+render();
+</script>
+</body>
+</html>
